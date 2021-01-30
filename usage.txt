@@ -8,8 +8,8 @@
 
   2. デバイスツリーファイルを作成して、インストールする
 
-    $ ./dtbo_make.sh
-    $ sudo ./dtbo_make.sh install
+    $ ./dtb_make.sh
+    $ sudo ./dtb_make.sh install
 
   3. ubuntu の場合、/boot/firmware/usercfg.txt を編集して、以下の2行を追加する（例）
 
