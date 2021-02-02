@@ -18,3 +18,4 @@ clean:
 install:
 	cp $(shell pwd)/rtc-pcf2127-11.ko /lib/modules/$(shell uname -r)/kernel/drivers/rtc/
 	depmod -a
+	cp del_pcf2127_11 /etc/initramfs-tools/hooks/del_pcf2127_11

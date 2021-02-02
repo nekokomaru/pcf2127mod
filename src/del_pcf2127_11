@@ -1,0 +1,27 @@
+#!/bin/sh
+
+PREREQ="del_pcf2127_11"
+prereqs()
+{
+	echo "$PREREQ"
+}
+
+case $1 in
+prereqs)
+	prereqs
+	exit 0
+        ;;
+esac
+
+. /usr/share/initramfs-tools/hook-functions
+# Begin real processing below this line
+
+#echo "MODULESDIR=${MODULESDIR}"
+#echo "DESTDIR=${DESTDIR}"
+#echo "rtcdir=${DESTDIR}/lib/modules/${version}/kernel/drivers/rtc/"
+if [ -f "${DESTDIR}/lib/modules/${version}/kernel/drivers/rtc/rtc-pcf2127-11.ko" ]; then
+	rm "${DESTDIR}/lib/modules/${version}/kernel/drivers/rtc/rtc-pcf2127-11.ko"
+	echo "delete from initramfs - ${DESTDIR}/lib/modules/${version}/kernel/drivers/rtc/rtc-pcf2127-11.ko"
+fi
+
+exit 0

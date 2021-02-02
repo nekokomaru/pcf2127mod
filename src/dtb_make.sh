@@ -5,6 +5,10 @@ TARGET='i2c-rtc-pcf2127.dtbo'
 DST_0='/boot/firmware/overlays'
 DST_1='/boot/overlays'
 
+if [ $1 -a $1 = 'clean' -a -f ${TARGET} ]; then
+  rm ${TARGET}
+  exit 0
+fi
 
 if [ -f ${SRC} ]; then
   echo "make dtbo from ${SRC} ..."
