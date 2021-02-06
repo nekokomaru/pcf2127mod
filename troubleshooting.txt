@@ -1,0 +1,55 @@
+# トラブルシューティングというか Tips. というか、そんな感じのもの
+
+## ハードを接続しても、タイマーで OS が起動しない
+  GPIO3 で起動する設定になっているかどうか確認する
+  
+### 設定の確認方法
+
+  簡単な確認方法は、shutdown して ラズパイの赤 LED は点灯してるが何も動作していない、という状態で
+  ピンヘッダの 5 と 6 をショートしてみる。OS が起動したら、必要な設定は出来ている。
+  何も変化が見られない場合は以下の記述を試す。
+
+### 設定方法
+
+  ubuntu だったら、ファームウエア用ツールをインストールし、コマンドでオプションを確認する
+  $ sudo apt install rpi-eeprom  # ツールをインストールする
+  $ sudo vcgencmd bootloader_config  # オプションを確認
+  
+  ここで、「WAKE_ON_GPIO=1」という記述があればファームウエアの問題は多分ない。他に問題がある可能性を疑う。
+  記述がない場合は、以下のサイトを参考にオプションを設定する
+  https://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2711_bootloader_config.md
+  
+  $ sudo -E rpi-eeprom-config --edit  # エディタで設定を編集するモードに入る
+  
+  ここで、WAKE_ON_GPIO=1 という記述に変更、もしくは新しく追記してセーブし、エディタを終了する。
+  その後再起動すると、ファームウェアの設定変更が適用されて起動する。
+  もしも変更を破棄したい場合は、再起動する前に以下のコマンドを打つ
+  $ sudo rpi-eeprom-update -r
+  
+## i2c1 の無効化
+  ハードウェアでは GPIO3 を wakeup として使っており、i2c のピンとして使用することは想定していない。
+  なので、i2C1 は無効化しておいたほうがいいかもしれない
+  
+  ubuntu の場合、/boot/firmware/syscfg.txt を編集し、i2c1(==i2c_arm)を無効化しておいてもいい
+    /boot/firmware/syscfg.txt
+    -----------
+    #dtparam=i2c_arm=on
+    #dtparam=i2c_arm_baudrate=400000
+    -----------
+    デフォルトからいじってたのでちょっと違うところもあるかもしれないが、こんな感じでコメントアウトする
+  
+  ここで、gpio3 はデフォルトで出力なのか入力なのかを調べてみる。
+  
+  $ sudo su -   # スーパーユーザーになる
+  # echo 3 > /sys/class/gpio/export   # gpio3 をいじる
+  # cat /sys/class/gpio/gpio3/direction  # gpio3 が入力か出力か調べる
+  # cat /sys/class/gpio/gpio3/value  # gpio3 の値を読む
+  # echo 3 > /sys/class/gpio/unexport  # gpio3 をいじるのをやめる
+  # ^d    # スーパーユーザーを抜ける
+  
+  作者の環境では、gpio3 は in であり、値は 1 であった。入力ポートであり、プルアップによって 1 が
+  入力されていることがわかった
+  gpio3 がこの状態であり、rtc ハードウェアを接続中に gpio3 をいじることがないのなら、rtc ハードウェアの
+  R5 は 0Ω（ジャンパをつけたりなんだりで短絡させる）でいいだろう。
+  
+  以上
