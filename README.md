@@ -35,3 +35,6 @@ rtc である pcf2129 のアラーム割り込みを使って PI の GPIO3 を�
 
 ### ソフトウェア・ライセンス
 GPL v2 に従う。詳しくは LICENSE を参照のこと
+
+### 改変者
+Yachiyo https://nekokohouse.sakura.ne.jp
