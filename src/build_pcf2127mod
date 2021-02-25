@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# set full path of pcf2127mod
+SRCTOP=''
+
+if [ -f /lib/modules/`uname -r`/kernel/drivers/rtc/rtc-pcf2127-11.ko ]; then
+  echo 'pcf2127mod already exists.'
+  exit 0
+fi
+
+if [ -z "${SRCTOP}" ]; then
+  SRCTOP="$*"
+  if [ ! -d "${SRCTOP}" ]; then
+    echo 'pcf2127 driver path not found.'
+    exit 1
+  fi
+fi
+
+cd "${SRCTOP}/src"
+make
+sudo make install
+
+sudo ./dtb_make.sh install
+
+exit 0
