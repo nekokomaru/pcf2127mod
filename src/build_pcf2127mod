@@ -1,25 +1,50 @@
 #!/bin/bash
 
-# set full path of pcf2127mod
+# set fullpath of pcf2127mod
 SRCTOP=''
 
-if [ -f /lib/modules/`uname -r`/kernel/drivers/rtc/rtc-pcf2127-11.ko ]; then
-  echo 'pcf2127mod already exists.'
-  exit 0
-fi
+cmdline=$*
 
-if [ -z "${SRCTOP}" ]; then
-  SRCTOP="$*"
-  if [ ! -d "${SRCTOP}" ]; then
-    echo 'pcf2127 driver path not found.'
-    exit 1
+# list all installed kernel
+initrd_list=`ls /boot/initrd.img-*`
+# extract kernel versions
+ver_list=`echo ${initrd_list} | sed 's#/boot/initrd.img-##g'`
+
+# current
+cur_ver=`uname -r`
+
+# find new installed kernel
+flag=0
+target=''
+set -- ${ver_list}
+for P in $*; do
+  if [ ${cur_ver} == ${P} ]; then
+    flag=1
+  elif [ ${flag} == 1 ]; then
+    target=${P}
+    flag=0
+    break
   fi
+done
+
+if [ ! -z "${target}" ]; then
+  echo "find installed new kernel ... ${target}"
+  if [ -z "${SRCTOP}" ]; then
+    SRCTOP="${cmdline}"
+    if [ ! -d "${SRCTOP}" ]; then
+      echo 'pcf2127 driver source path not found'
+      exit 1
+    fi
+  fi
+
+  # make new kernel
+  cd "${SRCTOP}/src"
+  make
+  sudo make install
+  sudo ./dtb_make.sh install
+
+else
+  echo 'new kernel not installed.'
 fi
-
-cd "${SRCTOP}/src"
-make
-sudo make install
-
-sudo ./dtb_make.sh install
 
 exit 0
