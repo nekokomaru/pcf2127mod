@@ -39,8 +39,8 @@ if [ ! -z "${target}" ]; then
 
   # make new kernel
   cd "${SRCTOP}/src"
-  make
-  sudo make install
+  make version=${target}
+  sudo make install version=${target}
   sudo ./dtb_make.sh install
 
 else
