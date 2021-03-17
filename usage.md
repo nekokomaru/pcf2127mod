@@ -35,11 +35,8 @@ SRCTOP='/home/hogehoge/pcf2127mod'
 ```shell:bash
 sudo ./install_apt.sh install
 ```
-これはカーネルがアップデートした時にドライバの make, install を行うスクリプトであるが、現状では正しく動作**しない**。（apt によってカーネルがインストールされたタイミングではまだカーネルが切り替わってないため）  
-そのため、現状ではカーネルがアップデートしたときには、再起動後、以下のコマンドでドライバの make, install を行うとよいだろう
-```shell:bash
-sudo /usr/local/bin/build_pcf2127mod
-```
+これはカーネルが apt によってアップデートした時にドライバの make, install を行うスクリプトであるが、十分な動作確認をしていないので、カーネルアップデート時には
+正しくドライバがインストールされたかどうか確認すること  
 
 5. ubuntu の場合 `/boot/firmware/usercfg.txt` を編集して、以下の2行を追加する（例）
 ```text:dts
