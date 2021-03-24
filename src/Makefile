@@ -18,5 +18,6 @@ clean:
 .PHONY: install
 install:
 	cp rtc-pcf2127-11.ko /lib/modules/$(version)/kernel/drivers/rtc/
-	depmod -a
+	depmod -a $(version)
 	cp del_pcf2127_11 /etc/initramfs-tools/hooks/del_pcf2127_11
+	
