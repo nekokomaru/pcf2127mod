@@ -93,4 +93,35 @@ raspberrypi os の場合はファームウェアのパス等、ubuntu とはい�
     web で情報を調べてこれを無効化する必要があるだろう（ubuntu はデフォルトでこのサービスは稼働してない）
 
 
+## dkms によるセットアップ
+カーネルのアップデートに対して自動的にドライバの適用を行うことのできる、[dkms](https://github.com/dell/dkms) を用いた管理も行うことが出来る  
+ただし、この方法ではドライバモジュールの更新のみ対象となるので、**デバイスツリーファイルのインストールや`usercfg.txt`の編集は上記を参照にして別途行うこと**
+
+1. `dkms` をインストールする
+```shell:cmd
+sudo apt install dkms
+```
+
+2. `dkms_inst/` に移動して、インストールを行う
+```shell:cmd
+cd dkms_inst
+sudo ./install.sh install
+```
+
+3. 以上でカーネルがアップデートしたとき、ドライバのビルド、インストールが自動的に行われるようになる
+
+4. ただしこの時点ではドライバのインストールがまだ行われていないので、以下の操作によりビルドとインストールを行う。再起動するとインストールは完了する
+```shell:cmd
+sudo dkms build -m pcf2127mod -v 1.0.0    # ドライバモジュールのビルドを行う
+sudo dkms install -m pcf2127mod -v 1.0.0  # ドライバモジュールのインストールを行う
+```
+
+5. dkms による管理をやめ、ドライバをアンインストールするときは、2 で用いたスクリプトを再度実行する
+```shell:cmd
+cd dkms_inst
+sudo ./install.sh uninstall
+```
+
+6. dkms による管理には1つ違う点が有り、 **ドライバモジュールのインストール先が `/lib/modules/(kernelversion)/updates/dkms` になってしまう。** 本来意図している `/lib/modules/(kernelversion)/kernel/drivers/rtc` でなくなってしまうのは、作成した `dkms.conf` に問題があるのか dkms のバグによるものなのか現状では追跡していない
+
 以上
